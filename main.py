@@ -15,7 +15,7 @@ from astrbot.core.utils.session_waiter import (
 )
 from collections import defaultdict
 
-@register("astrbot_plugin_jiahao", "vmoranv", "艾路迪克都去导管室!", "1.0.0")
+@register("astrbot_plugin_jiahao", "vmoranv", "艾路迪克都去导管室", "1.0.0")
 class JhdjPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -36,7 +36,7 @@ class JhdjPlugin(Star):
             self.min_speed_ms, self.max_speed_ms = 100, 500
             logger.warning("速度配置无效，已重置为默认值 (100-500ms)。")
 
-        # 开鹿游戏配置
+        # 导管室配置
         self.kailu_duration_minutes = self.config.get("kailu_game_duration", 30)
         self.kailu_sessions = {} # 用于存储每个群的游戏状态
         self.luguan_messages = {}
@@ -105,7 +105,7 @@ class JhdjPlugin(Star):
 
     @filter.command("jhdj")
     async def jhdj_handler(self, event: AstrMessageEvent):
-        """处理 data 文件夹下的随机 mp3 文件，每秒钟的音量都是[0,100]随机数,处理完了发回去"""
+        """DJ嘉豪搓条"""
         
         audio_files = [f for f in os.listdir(self.data_dir) if f.lower().endswith('.mp3')]
         if not audio_files:
@@ -140,11 +140,11 @@ class JhdjPlugin(Star):
 
     @filter.command("开鹿")
     async def kailu_handler(self, event: AstrMessageEvent):
-        """开始“开鹿”游戏，发送趣图并监听特定关键词。"""
+        """导管室开放!欢迎各位嘉豪来路迪克"""
         
         group_id = event.get_group_id()
         if not group_id:
-            yield event.plain_result("不要一个人偷偷鹿。")
+            yield event.plain_result("不要一个人偷偷鹿!")
             return
 
         if group_id in self.kailu_sessions and self.kailu_sessions[group_id].get('is_running', False):
@@ -188,7 +188,7 @@ class JhdjPlugin(Star):
                 current_count = records[sender_id]
                 logger.info(f"群 {group_id} 中几把 {sender_id} 鹿了 {current_count}")
 
-                # 检查是否达到里程碑
+                # 检查是否要发嘉豪语录
                 if self.luguan_messages and current_count in self.luguan_messages:
                     message_to_send = self.luguan_messages[current_count]
                     await event.send(event.plain_result(message_to_send))
@@ -210,7 +210,7 @@ class JhdjPlugin(Star):
             else:
                 result_text = "导管室空无一人,十年前的仇难道不报了吗!"
             
-            # 清理会话
+            # 导管室关闭
             if group_id in self.kailu_sessions:
                 del self.kailu_sessions[group_id]
 
