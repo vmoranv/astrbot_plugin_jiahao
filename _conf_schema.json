@@ -1,0 +1,39 @@
+{
+  "kailu_game_duration": {
+    "description": "“开鹿”游戏的持续时间（分钟）",
+    "type": "int",
+    "hint": "设置游戏会话的超时时间，单位为分钟。",
+    "default": 30
+  },
+  "volume_config": {
+    "description": "音量随机变化配置",
+    "type": "object",
+    "hint": "在这里调整音量变化的范围和速度。",
+    "items": {
+      "min_volume": {
+        "description": "随机音量的最小值",
+        "type": "int",
+        "hint": "音量范围是 0-100，建议不要低于 10 以免听不见。",
+        "default": 20
+      },
+      "max_volume": {
+        "description": "随机音量的最大值",
+        "type": "int",
+        "hint": "音量范围是 0-100。",
+        "default": 100
+      },
+      "min_speed_ms": {
+        "description": "音量变化的最短持续时间(毫秒)",
+        "type": "int",
+        "hint": "值越小，变化越快。1000毫秒 = 1秒。",
+        "default": 100
+      },
+      "max_speed_ms": {
+        "description": "音量变化的最长持续时间(毫秒)",
+        "type": "int",
+        "hint": "值越小，变化越快。建议不要超过1000。",
+        "default": 500
+      }
+    }
+  }
+}
