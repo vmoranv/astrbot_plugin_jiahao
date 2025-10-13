@@ -1,5 +1,5 @@
 name: astrbot_plugin_jiahao # 这是你的插件的唯一识别名。
 desc: 艾路迪克都去导管室 # 插件简短描述
-version: 1.0.0 # 插件版本号。格式：v1.1.1 或者 v1.1
+version: 1.0.1 # 插件版本号。格式：v1.1.1 或者 v1.1
 author: vmoranv # 作者
 repo: https://github.com/vmoranv/astrbot_plugin_jiahao # 插件的仓库地址

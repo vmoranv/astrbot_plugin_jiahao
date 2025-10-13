@@ -15,7 +15,7 @@ from astrbot.core.utils.session_waiter import (
 )
 from collections import defaultdict
 
-@register("astrbot_plugin_jiahao", "vmoranv", "艾路迪克都去导管室", "1.0.0")
+@register("astrbot_plugin_jiahao", "vmoranv", "艾路迪克都去导管室", "1.0.1")
 class JhdjPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -182,11 +182,12 @@ class JhdjPlugin(Star):
                 return
 
             keywords = ["鹿", "撸管", "🦌"]
-            if any(keyword in msg for keyword in keywords):
+            luge_count = sum(msg.count(keyword) for keyword in keywords)
+            if luge_count > 0:
                 records = self.kailu_sessions[group_id]['records']
-                records[sender_id] += 1
+                records[sender_id] += luge_count
                 current_count = records[sender_id]
-                logger.info(f"群 {group_id} 中几把 {sender_id} 鹿了 {current_count}")
+                logger.info(f"群 {group_id} 中几把 {sender_id} 鹿了 {current_count} (本次 +{luge_count})")
 
                 # 检查是否要发嘉豪语录
                 if self.luguan_messages and current_count in self.luguan_messages:
