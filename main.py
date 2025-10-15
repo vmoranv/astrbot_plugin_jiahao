@@ -15,7 +15,7 @@ from astrbot.core.utils.session_waiter import (
 )
 from collections import defaultdict
 
-@register("astrbot_plugin_jiahao", "vmoranv", "艾路迪克都去导管室", "1.0.1")
+@register("astrbot_plugin_jiahao", "vmoranv", "艾路迪克都去导管室", "1.0.2")
 class JhdjPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -185,14 +185,30 @@ class JhdjPlugin(Star):
             luge_count = sum(msg.count(keyword) for keyword in keywords)
             if luge_count > 0:
                 records = self.kailu_sessions[group_id]['records']
+                old_count = records[sender_id]
                 records[sender_id] += luge_count
                 current_count = records[sender_id]
                 logger.info(f"群 {group_id} 中几把 {sender_id} 鹿了 {current_count} (本次 +{luge_count})")
 
                 # 检查是否要发嘉豪语录
-                if self.luguan_messages and current_count in self.luguan_messages:
-                    message_to_send = self.luguan_messages[current_count]
-                    await event.send(event.plain_result(message_to_send))
+                if self.luguan_messages:
+                    # 找出所有被跨越的里程碑，包括取模
+                    sorted_milestones = sorted(self.luguan_messages.keys())
+                    if sorted_milestones:
+                        max_milestone = sorted_milestones[-1]
+                        
+                        # 通过周期计算所有被触发的里程碑，避免遍历大区间
+                        start_cycle = old_count // max_milestone
+                        end_cycle = current_count // max_milestone
+
+                        for cycle in range(start_cycle, end_cycle + 1):
+                            for milestone in sorted_milestones:
+                                trigger_point = cycle * max_milestone + milestone
+                                
+                                # 只有严格大于 old_count 的才算新触发
+                                if old_count < trigger_point <= current_count:
+                                    message_to_send = self.luguan_messages[milestone]
+                                    await event.send(event.plain_result(message_to_send))
 
         try:
             await kailu_waiter(event, session_filter=CustomFilter())
