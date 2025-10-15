@@ -197,18 +197,28 @@ class JhdjPlugin(Star):
                     if sorted_milestones:
                         max_milestone = sorted_milestones[-1]
                         
-                        # 通过周期计算所有被触发的里程碑，避免遍历大区间
-                        start_cycle = old_count // max_milestone
-                        end_cycle = current_count // max_milestone
+                        old_cycle = old_count // max_milestone
+                        current_cycle = current_count // max_milestone
 
-                        for cycle in range(start_cycle, end_cycle + 1):
+                        # 如果完成了一个或多个完整的周期，则发送一整套语录
+                        if current_cycle > old_cycle:
+                            logger.info(f"用户 {sender_id} 完成了一个完整的鹿管周期，发送全套语录。")
                             for milestone in sorted_milestones:
-                                trigger_point = cycle * max_milestone + milestone
-                                
-                                # 只有严格大于 old_count 的才算新触发
+                                message_to_send = self.luguan_messages[milestone]
+                                await event.send(event.plain_result(message_to_send))
+                        else:
+                            # 在同一个周期内，高效地只寻找最后一个被触发的语录
+                            # 从后往前找，找到第一个就中断，避免无效遍历
+                            last_milestone_to_send = None
+                            for milestone in reversed(sorted_milestones):
+                                trigger_point = current_cycle * max_milestone + milestone
                                 if old_count < trigger_point <= current_count:
-                                    message_to_send = self.luguan_messages[milestone]
-                                    await event.send(event.plain_result(message_to_send))
+                                    last_milestone_to_send = milestone
+                                    break  # 找到了，立即停止
+                            
+                            if last_milestone_to_send:
+                                message_to_send = self.luguan_messages[last_milestone_to_send]
+                                await event.send(event.plain_result(message_to_send))
 
         try:
             await kailu_waiter(event, session_filter=CustomFilter())
