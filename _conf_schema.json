@@ -1,8 +1,8 @@
 {
   "kailu_game_duration": {
-    "description": "“开鹿”游戏的持续时间（分钟）",
+    "description": "导管室开放时间（分钟）",
     "type": "int",
-    "hint": "设置游戏会话的超时时间，单位为分钟。",
+    "hint": "设置导管室的超时时间，单位为分钟。",
     "default": 30
   },
   "volume_config": {
